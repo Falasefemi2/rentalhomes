@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { authApi, clearTokens, getStoredTokens, setTokens, type User, type AuthTokens } from "./api";
+import { isBrowser } from "./env";
 
 type AuthState = {
   user: User | null | undefined;
@@ -15,7 +16,7 @@ const AuthContext = React.createContext<AuthState | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const qc = useQueryClient();
-  const hasToken = typeof window !== "undefined" ? !!getStoredTokens().access : false;
+  const hasToken = isBrowser ? getStoredTokens().access !== null : false;
 
   const { data: user, isLoading } = useQuery({
     queryKey: ["me"],

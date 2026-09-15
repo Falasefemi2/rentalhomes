@@ -106,7 +106,7 @@ export function ListingFilters({
                   <X className="size-3.5" /> Clear filters
                 </Button>
               ) : null}
-              {typeof total === "number" ? (
+              {total !== undefined ? (
                 <span className="ml-auto text-xs font-medium text-muted-foreground">{total} homes</span>
               ) : null}
             </div>
@@ -118,7 +118,7 @@ export function ListingFilters({
                 <X className="size-3" /> Clear
               </Button>
             ) : null}
-            {typeof total === "number" ? (
+            {total !== undefined ? (
               <span className="ml-auto text-xs font-medium text-muted-foreground">{total} homes found</span>
             ) : null}
           </div>

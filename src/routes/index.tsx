@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { listingsApi, type ListingFilters } from "#/lib/api";
+import { errorMessage } from "#/lib/errors";
 import { ListingCard, ListingSkeleton } from "#/components/listing/card";
 import { ListingFilters as Filters, type FilterValues } from "#/components/listing/filters";
 import { Button } from "#/components/ui/button";
@@ -162,7 +163,7 @@ function Home() {
         {isError ? (
           <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-6 text-sm">
             <p className="font-semibold text-destructive">Could not load listings</p>
-            <p className="text-muted-foreground">{(error as Error).message}</p>
+            <p className="text-muted-foreground">{errorMessage(error, "Could not load listings")}</p>
             <p className="mt-2 text-xs text-muted-foreground">
               Make sure the Go API is running on http://localhost:8080 (task dev) and Postgres is reachable.
             </p>

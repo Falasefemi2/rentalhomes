@@ -2,6 +2,7 @@ import * as React from "react";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { isCloudinaryConfigured, uploadImageToCloudinary } from "#/lib/cloudinary";
+import { errorMessage } from "#/lib/errors";
 import { ImagePlus, Loader2, Trash2, Upload } from "lucide-react";
 
 /**
@@ -26,20 +27,32 @@ export function PhotoInput({
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
-    setUploading((n) => n + files.length);
-    try {
-      for (const file of Array.from(files)) {
+    const list = Array.from(files);
+    setUploading((n) => n + list.length);
+    // Slots preserve selection order while uploads race; lastPublished lets
+    // each progressive update replace (not duplicate) our earlier appends
+    // without clobbering edits the parent made meanwhile.
+    const slots: (string | undefined)[] = list.map(() => undefined);
+    let lastPublished: string[] = [];
+    const publish = () => {
+      const fresh = urlsRef.current.filter((u) => !lastPublished.includes(u));
+      const ours = slots.filter((u): u is string => u !== undefined);
+      lastPublished = ours;
+      onChange([...fresh, ...ours]);
+    };
+    await Promise.allSettled(
+      list.map(async (file, i) => {
         try {
-          const url = await uploadImageToCloudinary(file);
-          onChange([...urlsRef.current, url]);
+          slots[i] = await uploadImageToCloudinary(file);
+          publish();
         } catch (err) {
-          onUploadError?.((err as Error).message);
+          onUploadError?.(errorMessage(err, "Upload failed"));
+        } finally {
+          setUploading((n) => Math.max(0, n - 1));
         }
-      }
-    } finally {
-      setUploading((n) => Math.max(0, n - files.length));
-      if (fileRef.current) fileRef.current.value = "";
-    }
+      }),
+    );
+    if (fileRef.current) fileRef.current.value = "";
   };
 
   // onChange identity changes each render — keep a ref so the async
@@ -71,6 +84,7 @@ export function PhotoInput({
             accept="image/*"
             multiple
             className="hidden"
+            disabled={uploading > 0}
             onChange={(e) => void handleFiles(e.target.files)}
           />
           <Button

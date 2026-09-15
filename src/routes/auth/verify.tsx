@@ -7,16 +7,15 @@ import * as React from "react";
 export const Route = createFileRoute("/auth/verify")({ component: Verify });
 
 function Verify() {
-  const search = Route.useSearch() as { token?: string };
   const [state, setState] = React.useState<"idle" | "loading" | "ok" | "error">("idle");
   const [msg, setMsg] = React.useState("");
 
   React.useEffect(() => {
-    const t = search.token || new URLSearchParams(window.location.search).get("token") || "";
+    const t = new URLSearchParams(window.location.search).get("token") || "";
     if (!t) return;
     setState("loading");
     authApi.verify(t).then(() => { setState("ok"); setMsg("Email verified. You can now sign in."); }).catch((e: Error) => { setState("error"); setMsg(e.message); });
-  }, [search.token]);
+  }, []);
 
   return (
     <div className="mx-auto max-w-[480px] px-4 py-16 sm:px-6">

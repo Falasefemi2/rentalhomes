@@ -7,6 +7,7 @@ import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "#/components/ui/card";
 import { isCloudinaryConfigured, uploadImageToCloudinary } from "#/lib/cloudinary";
+import { errorMessage } from "#/lib/errors";
 import { useToast } from "#/components/ui/toast";
 import { Loader2, Upload } from "lucide-react";
 import * as React from "react";
@@ -50,7 +51,7 @@ function MePage() {
       mutate.mutate(secureUrl);
       toast("Profile photo updated");
     } catch (e) {
-      const message = (e as Error).message;
+      const message = errorMessage(e, "Upload failed");
       setErr(message);
       toast("Upload failed", { description: message, variant: "error" });
     } finally {

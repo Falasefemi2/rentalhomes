@@ -1,13 +1,7 @@
-const CLOUD_NAME =
-  (typeof import.meta !== "undefined" &&
-    (import.meta.env as Record<string, string | undefined> | undefined)
-      ?.VITE_CLOUDINARY_CLOUD_NAME) ||
-  "";
-const UPLOAD_PRESET =
-  (typeof import.meta !== "undefined" &&
-    (import.meta.env as Record<string, string | undefined> | undefined)
-      ?.VITE_CLOUDINARY_UPLOAD_PRESET) ||
-  "";
+import { readEnv } from "./env";
+
+const CLOUD_NAME = readEnv("VITE_CLOUDINARY_CLOUD_NAME") || "";
+const UPLOAD_PRESET = readEnv("VITE_CLOUDINARY_UPLOAD_PRESET") || "";
 
 export function isCloudinaryConfigured() {
   return CLOUD_NAME !== "" && UPLOAD_PRESET !== "";
@@ -53,11 +47,15 @@ export async function uploadImageToCloudinary(file: File): Promise<string> {
     window.clearTimeout(timeout);
   }
   if (!res.ok) {
+    // SAFETY: Cloudinary error responses carry { error?: { message?: string } };
+    // any other shape falls through to the status-code fallback below.
     const errBody = (await res.json().catch(() => null)) as {
       error?: { message?: string };
     } | null;
     throw new Error(errBody?.error?.message || `Upload failed for "${file.name}" (${res.status})`);
   }
+  // SAFETY: a successful upload responds with JSON containing secure_url;
+  // a missing secure_url is treated as failure on the next line.
   const body = (await res.json()) as { secure_url?: string; error?: { message?: string } };
   if (!body.secure_url) {
     throw new Error(body.error?.message || `Upload failed for "${file.name}"`);

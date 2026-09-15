@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { listingsApi } from "#/lib/api";
 import { useAuth } from "#/lib/auth";
+import { errorMessage } from "#/lib/errors";
 import { ListingCard, ListingSkeleton } from "#/components/listing/card";
 import { Button } from "#/components/ui/button";
 import { Plus } from "lucide-react";
@@ -45,7 +46,7 @@ function MyListings() {
         </Button>
       </div>
 
-      {isError ? <div className="mt-6 rounded-xl border bg-destructive/5 p-4 text-sm text-destructive">{(error as Error).message}</div> : null}
+      {isError ? <div className="mt-6 rounded-xl border bg-destructive/5 p-4 text-sm text-destructive">{errorMessage(error)}</div> : null}
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {isLoading ? Array.from({ length: 4 }).map((_, i) => <ListingSkeleton key={i} />) : (data?.data ?? []).map((l) => <ListingCard key={l.id} listing={l} />)}

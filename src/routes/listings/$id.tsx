@@ -1,7 +1,8 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { favoritesApi, formatPrice, listingsApi } from "#/lib/api";
+import { favoritesApi, formatPrice, listingsApi, type ListingStatus } from "#/lib/api";
 import { useAuth } from "#/lib/auth";
+import { errorMessage } from "#/lib/errors";
 import { Button } from "#/components/ui/button";
 import { Badge } from "#/components/ui/badge";
 import { Card, CardContent } from "#/components/ui/card";
@@ -74,7 +75,7 @@ function DetailPage() {
       <div className="mx-auto max-w-[1100px] px-4 py-16 sm:px-6">
         <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-8">
           <p className="font-semibold text-destructive">Listing not found</p>
-          <p className="text-sm text-muted-foreground">{(error as Error)?.message ?? "Check the URL or try browsing."}</p>
+          <p className="text-sm text-muted-foreground">{error instanceof Error ? error.message : "Check the URL or try browsing."}</p>
           <Button asChild className="mt-4" variant="outline">
             <Link to="/">Browse homes</Link>
           </Button>
@@ -86,7 +87,9 @@ function DetailPage() {
   const { listing, media, landlord_name, landlord_phone } = data;
   const isOwner = isAuthenticated && user?.id === listing.landlord_id;
   const cover = media[active]?.url ?? listing.cover_image ?? null;
-  const statusMap: Record<string, string> = { avaiable: "Available", rented: "Rented", inative: "Inactive" };
+  type StatusNames = { [status in ListingStatus]: string };
+  const statusMap: StatusNames = { avaiable: "Available", rented: "Rented", inative: "Inactive" };
+  const favErrorMessage = errorMessage(favAdd.error ?? favRemove.error);
 
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-6 sm:px-6 sm:py-8">
@@ -259,7 +262,7 @@ function DetailPage() {
                 </Button>
                 {(favAdd.isSuccess || favRemove.isSuccess) && <span className="text-xs text-emerald-600 self-center">Updated</span>}
                 {(favAdd.isError || favRemove.isError) && (
-                  <span className="text-xs text-destructive self-center">{(favAdd.error as Error)?.message ?? (favRemove.error as Error)?.message}</span>
+                  <span className="text-xs text-destructive self-center">{favErrorMessage}</span>
                 )}
               </div>
             </CardContent>

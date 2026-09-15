@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { favoritesApi } from "#/lib/api";
 import { useAuth } from "#/lib/auth";
+import { errorMessage } from "#/lib/errors";
 import { ListingCard, ListingSkeleton } from "#/components/listing/card";
 import { Button } from "#/components/ui/button";
 import { Heart } from "lucide-react";
@@ -43,7 +44,7 @@ function FavoritesPage() {
 
       {isError ? (
         <div className="mt-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
-          {(error as Error).message}
+          {errorMessage(error)}
         </div>
       ) : null}
 

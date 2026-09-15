@@ -1,5 +1,6 @@
 import * as React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { isBrowser } from "#/lib/env";
 
 function makeQueryClient() {
 	return new QueryClient({
@@ -20,7 +21,7 @@ function makeQueryClient() {
 let browserQueryClient: QueryClient | undefined;
 
 function getQueryClient() {
-	if (typeof window === "undefined") {
+	if (!isBrowser) {
 		// Server: always create a fresh client per request
 		return makeQueryClient();
 	}

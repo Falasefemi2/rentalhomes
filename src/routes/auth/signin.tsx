@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { authApi } from "#/lib/api";
+import { errorMessage } from "#/lib/errors";
 import { useAuth } from "#/lib/auth";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
@@ -28,7 +29,7 @@ function SignIn() {
       nav({ to: "/" });
     } catch (err) {
       console.error("[signin] failed:", err);
-      setError((err as Error).message);
+      setError(errorMessage(err, "Sign in failed"));
     } finally {
       setLoading(false);
     }

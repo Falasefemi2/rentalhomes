@@ -1,8 +1,6 @@
-const API_BASE =
-  (typeof import.meta !== "undefined" &&
-    (import.meta.env as Record<string, string | undefined> | undefined)
-      ?.VITE_API_URL) ||
-  "http://localhost:8080";
+import { isBrowser, readEnv } from "./env";
+
+const API_BASE = readEnv("VITE_API_URL") || "http://localhost:8080";
 
 function networkError(path: string, cause: unknown): Error {
   const detail = cause instanceof Error ? cause.message : String(cause);
@@ -28,6 +26,8 @@ export type AuthTokens = {
   refresh_token: string;
 };
 
+export type ListingStatus = "avaiable" | "rented" | "inative";
+
 export type Listing = {
   id: string;
   landlord_id: string;
@@ -36,7 +36,7 @@ export type Listing = {
   price: string;
   rooms: number | null;
   furnished: boolean;
-  status: string;
+  status: ListingStatus;
   address: string;
   latitude: number;
   longitude: number;
@@ -83,11 +83,11 @@ export type ListingFilters = {
 };
 
 function getAccessToken(): string | null {
-  if (typeof window === "undefined") return null;
+  if (!isBrowser) return null;
   return localStorage.getItem("easyrent_access");
 }
 function getRefreshToken(): string | null {
-  if (typeof window === "undefined") return null;
+  if (!isBrowser) return null;
   return localStorage.getItem("easyrent_refresh");
 }
 
@@ -108,11 +108,19 @@ type ApiError = Error & { status?: number };
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: res.statusText }));
+    // SAFETY: err is a locally constructed Error; attaching the HTTP status
+    // only adds optional metadata without changing the Error contract.
     const err = new Error(body.error || body.message || `Request failed ${res.status}`) as ApiError;
     err.status = res.status;
     throw err;
   }
-  if (res.status === 204) return undefined as T;
+  if (res.status === 204) {
+    // SAFETY: a 204 response carries no body, and every 204 call site uses
+    // T = void, so undefined is the only inhabitant of the response contract.
+    return undefined as T;
+  }
+  // SAFETY: each endpoint's Go handler responds with JSON matching the
+  // call-site T; a contract mismatch surfaces as a shape error at use site.
   return res.json() as Promise<T>;
 }
 
@@ -128,6 +136,7 @@ async function refreshIfNeeded(): Promise<string | null> {
     clearTokens();
     return null;
   }
+  // SAFETY: POST /auth/refresh responds with AuthTokens per the Go API contract.
   const tokens = (await res.json()) as AuthTokens;
   setTokens(tokens);
   return tokens.access_token;
@@ -248,8 +257,10 @@ export const favoritesApi = {
   remove: (id: string) => apiFetch<void>(`/favorites/${id}`, { method: "DELETE" }),
 };
 
-export function formatPrice(price: string | number) {
-  const n = typeof price === "string" ? Number(price) : price;
+export function formatPrice(price: string): string;
+export function formatPrice(price: number): string;
+export function formatPrice(price: string | number): string {
+  const n = Number(price);
   if (Number.isNaN(n)) return String(price);
   return new Intl.NumberFormat("en-NG", {
     style: "currency",

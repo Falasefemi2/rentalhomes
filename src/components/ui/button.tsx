@@ -46,14 +46,13 @@ type ButtonProps = ButtonPrimitive.Props &
 function Button({ className, variant = "default", size = "default", asChild, children, ...props }: ButtonProps) {
   const classes = cn(buttonVariants({ variant, size, className }))
 
-  if (asChild && React.isValidElement(children)) {
-    const child = children as React.ReactElement<{ className?: string }>
-    return React.cloneElement(child, {
+  if (asChild && React.isValidElement<{ className?: string }>(children)) {
+    return React.cloneElement(children, {
       // merge classes — child className wins last if duplicates, but we prepend our variant
-      className: cn(classes, (child.props as { className?: string }).className),
+      className: cn(classes, children.props.className),
       // @ts-expect-error — allow data-slot passthrough
       "data-slot": "button",
-    } as never)
+    })
   }
 
   return (

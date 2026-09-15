@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { authApi } from "#/lib/api";
+import { errorMessage } from "#/lib/errors";
 import { useAuth } from "#/lib/auth";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
@@ -32,7 +33,7 @@ function SignUp() {
       setInfo("Account created. Check your email to verify (link also logged to API console).");
       setTimeout(() => nav({ to: "/" }), 900);
     } catch (err) {
-      setError((err as Error).message);
+      setError(errorMessage(err, "Sign up failed"));
     } finally { setLoading(false); }
   };
 

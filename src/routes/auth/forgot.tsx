@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { authApi } from "#/lib/api";
+import { errorMessage } from "#/lib/errors";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
@@ -20,7 +21,7 @@ function Forgot() {
     try {
       await authApi.forgot(email.trim());
       setMsg("If the email is registered, a reset link was sent (check API logs).");
-    } catch (e) { setErr((e as Error).message); } finally { setLoading(false); }
+    } catch (e) { setErr(errorMessage(e)); } finally { setLoading(false); }
   };
 
   return (

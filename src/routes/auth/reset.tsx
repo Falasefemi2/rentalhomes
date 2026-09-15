@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { authApi } from "#/lib/api";
+import { errorMessage } from "#/lib/errors";
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { PasswordInput } from "#/components/ui/password-input";
@@ -27,7 +28,7 @@ function Reset() {
     try {
       await authApi.reset(token.trim(), password);
       setMsg("Password reset — you can now sign in.");
-    } catch (e) { setErr((e as Error).message); } finally { setLoading(false); }
+    } catch (e) { setErr(errorMessage(e)); } finally { setLoading(false); }
   };
 
   return (

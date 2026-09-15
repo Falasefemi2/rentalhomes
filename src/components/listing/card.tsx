@@ -1,10 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { Badge } from "#/components/ui/badge";
-import { formatPrice, type Listing } from "#/lib/api";
+import { formatPrice, type Listing, type ListingStatus } from "#/lib/api";
 import { BedDouble, Heart, MapPin, Sofa } from "lucide-react";
 import { cn } from "cn";
 
-const statusLabel: Record<string, { label: string; variant: "success" | "secondary" | "warning" }> = {
+type StatusBadge = { label: string; variant: "success" | "secondary" | "warning" };
+type StatusLabels = { [status in ListingStatus]: StatusBadge };
+
+const statusLabel: StatusLabels = {
   avaiable: { label: "Available", variant: "success" },
   rented: { label: "Rented", variant: "secondary" },
   inative: { label: "Inactive", variant: "warning" },
