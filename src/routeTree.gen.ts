@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as MyListingsRouteImport } from './routes/my-listings'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthForgotRouteImport } from './routes/auth/forgot'
 import { Route as AuthResetRouteImport } from './routes/auth/reset'
 import { Route as AuthSigninRouteImport } from './routes/auth/signin'
@@ -40,6 +41,11 @@ const MeRoute = MeRouteImport.update({
 const MyListingsRoute = MyListingsRouteImport.update({
   id: '/my-listings',
   path: '/my-listings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthForgotRoute = AuthForgotRouteImport.update({
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/favorites': typeof FavoritesRoute
   '/me': typeof MeRoute
   '/my-listings': typeof MyListingsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/reset': typeof AuthResetRoute
   '/auth/signin': typeof AuthSigninRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/favorites': typeof FavoritesRoute
   '/me': typeof MeRoute
   '/my-listings': typeof MyListingsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/reset': typeof AuthResetRoute
   '/auth/signin': typeof AuthSigninRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/favorites': typeof FavoritesRoute
   '/me': typeof MeRoute
   '/my-listings': typeof MyListingsRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/reset': typeof AuthResetRoute
   '/auth/signin': typeof AuthSigninRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/me'
     | '/my-listings'
+    | '/reset-password'
     | '/auth/forgot'
     | '/auth/reset'
     | '/auth/signin'
@@ -147,6 +157,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/me'
     | '/my-listings'
+    | '/reset-password'
     | '/auth/forgot'
     | '/auth/reset'
     | '/auth/signin'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/favorites'
     | '/me'
     | '/my-listings'
+    | '/reset-password'
     | '/auth/forgot'
     | '/auth/reset'
     | '/auth/signin'
@@ -176,6 +188,7 @@ export interface RootRouteChildren {
   FavoritesRoute: typeof FavoritesRoute
   MeRoute: typeof MeRoute
   MyListingsRoute: typeof MyListingsRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   AuthForgotRoute: typeof AuthForgotRoute
   AuthResetRoute: typeof AuthResetRoute
   AuthSigninRoute: typeof AuthSigninRoute
@@ -213,6 +226,13 @@ declare module '@tanstack/react-router' {
       path: '/my-listings'
       fullPath: '/my-listings'
       preLoaderRoute: typeof MyListingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/forgot': {
@@ -291,6 +311,7 @@ const rootRouteChildren: RootRouteChildren = {
   FavoritesRoute: FavoritesRoute,
   MeRoute: MeRoute,
   MyListingsRoute: MyListingsRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   AuthForgotRoute: AuthForgotRoute,
   AuthResetRoute: AuthResetRoute,
   AuthSigninRoute: AuthSigninRoute,
