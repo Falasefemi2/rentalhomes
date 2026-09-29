@@ -27,7 +27,7 @@ function ResetPassword() {
     if (search.token) setToken(search.token);
   }, [search.token]);
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true); setErr(null); setMsg(null);
     try {
